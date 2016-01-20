@@ -42,116 +42,116 @@ import java.security.cert.X509Certificate;
  */
 class WeaveSSLSocketFactory implements SocketFactory, LayeredSocketFactory {
 
-  private static final boolean DISABLE_SERVER_CERT_CHECK = true; // todo look into this
+    private static final boolean DISABLE_SERVER_CERT_CHECK = true; // todo look into this
 
 //  private static final boolean ENUMERATE_TRUSTED_CAS = false;
 
-  private SSLContext m_sslcontext = null;
+    private SSLContext m_sslcontext = null;
 
-  private synchronized SSLContext getSSLContext() throws IOException {
-    if (m_sslcontext == null) {
-      m_sslcontext = createEasySSLContext();
-    }
-    return m_sslcontext;
-  }
-
-  /**
-   * @see SocketFactory#connectSocket(Socket, String, int, InetAddress, int, HttpParams)
-   */
-  public Socket connectSocket(Socket sock,
-                              String host,
-                              int port,
-                              InetAddress localAddress,
-                              int localPort,
-                              HttpParams params) throws IOException {
-
-    int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
-    int soTimeout = HttpConnectionParams.getSoTimeout(params);
-
-    InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
-    SSLSocket sslsock = (SSLSocket)((sock != null) ? sock : createSocket());
-
-    if ((localAddress != null) || (localPort > 0)) {
-      if (localPort < 0) {
-        localPort = 0;
-      }
-      InetSocketAddress isa = new InetSocketAddress(localAddress, localPort);
-      sslsock.bind(isa);
+    private synchronized SSLContext getSSLContext() throws IOException {
+        if (m_sslcontext == null) {
+            m_sslcontext = createEasySSLContext();
+        }
+        return m_sslcontext;
     }
 
-    sslsock.connect(remoteAddress, connTimeout);
-    sslsock.setSoTimeout(soTimeout);
-    return sslsock;
+    /**
+     * @see SocketFactory#connectSocket(Socket, String, int, InetAddress, int, HttpParams)
+     */
+    public Socket connectSocket(Socket sock,
+                                String host,
+                                int port,
+                                InetAddress localAddress,
+                                int localPort,
+                                HttpParams params) throws IOException {
 
-  }
+        int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
+        int soTimeout = HttpConnectionParams.getSoTimeout(params);
 
-  /**
-   * @see SocketFactory#createSocket()
-   */
-  public Socket createSocket() throws IOException {
-    return getSSLContext().getSocketFactory().createSocket();
-  }
+        InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
+        SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket());
 
-  /**
-   * @see SocketFactory#isSecure(Socket)
-   */
-  public boolean isSecure(Socket socket) throws IllegalArgumentException {
-    return true;
-  }
+        if ((localAddress != null) || (localPort > 0)) {
+            if (localPort < 0) {
+                localPort = 0;
+            }
+            InetSocketAddress isa = new InetSocketAddress(localAddress, localPort);
+            sslsock.bind(isa);
+        }
 
-  /**
-   * @see LayeredSocketFactory#createSocket(Socket, String, int, boolean)
-   */
-  public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
-    return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
-  }
+        sslsock.connect(remoteAddress, connTimeout);
+        sslsock.setSoTimeout(soTimeout);
+        return sslsock;
 
-  public boolean equals(Object obj) {
-    return ((obj != null) && obj.getClass().equals(WeaveSSLSocketFactory.class));
-  }
-
-  public int hashCode() {
-    return WeaveSSLSocketFactory.class.hashCode();
-  }
-
-  private static SSLContext createEasySSLContext() throws IOException {
-    try {
-      SSLContext context = SSLContext.getInstance("TLS");
-      context.init(null, new TrustManager[]{new WeaveX509TrustManager(null)}, null);
-      return context;
-    } catch (Exception e) {
-      throw new IOException(e.getMessage());
     }
-  }
 
-  private static class WeaveX509TrustManager implements X509TrustManager {
+    /**
+     * @see SocketFactory#createSocket()
+     */
+    public Socket createSocket() throws IOException {
+        return getSSLContext().getSocketFactory().createSocket();
+    }
 
-    private X509TrustManager m_standardTrustManager = null;
+    /**
+     * @see SocketFactory#isSecure(Socket)
+     */
+    public boolean isSecure(Socket socket) throws IllegalArgumentException {
+        return true;
+    }
+
+    /**
+     * @see LayeredSocketFactory#createSocket(Socket, String, int, boolean)
+     */
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
+        return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
+    }
+
+    public boolean equals(Object obj) {
+        return ((obj != null) && obj.getClass().equals(WeaveSSLSocketFactory.class));
+    }
+
+    public int hashCode() {
+        return WeaveSSLSocketFactory.class.hashCode();
+    }
+
+    private static SSLContext createEasySSLContext() throws IOException {
+        try {
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, new TrustManager[]{new WeaveX509TrustManager(null)}, null);
+            return context;
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    private static class WeaveX509TrustManager implements X509TrustManager {
+
+        private X509TrustManager m_standardTrustManager = null;
 
 //    private static boolean sm_issued = false;
 
-    public WeaveX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-      super();
-      TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      factory.init(keystore);
-      TrustManager[] trustmanagers = factory.getTrustManagers();
-      if (trustmanagers.length == 0) {
-        throw new NoSuchAlgorithmException("no trust manager found");
-      }
-      m_standardTrustManager = (X509TrustManager)trustmanagers[0];
-    }
+        public WeaveX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
+            super();
+            TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init(keystore);
+            TrustManager[] trustmanagers = factory.getTrustManagers();
+            if (trustmanagers.length == 0) {
+                throw new NoSuchAlgorithmException("no trust manager found");
+            }
+            m_standardTrustManager = (X509TrustManager) trustmanagers[0];
+        }
 
-    /**
-     * @see X509TrustManager#checkClientTrusted(X509Certificate[],String)
-     */
-    public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
-      m_standardTrustManager.checkClientTrusted(certificates, authType);
-    }
+        /**
+         * @see X509TrustManager#checkClientTrusted(X509Certificate[], String)
+         */
+        public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+            m_standardTrustManager.checkClientTrusted(certificates, authType);
+        }
 
-    /**
-     * @see X509TrustManager#checkServerTrusted(X509Certificate[],String)
-     */
-	public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+        /**
+         * @see X509TrustManager#checkServerTrusted(X509Certificate[], String)
+         */
+        public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 //      if (ENUMERATE_TRUSTED_CAS && !sm_issued) {
 //        Dbg.d("CA certs:");
 //        X509Certificate[] cas = getAcceptedIssuers();
@@ -161,8 +161,8 @@ class WeaveSSLSocketFactory implements SocketFactory, LayeredSocketFactory {
 //        sm_issued = true;
 //      }
 
-      if (DISABLE_SERVER_CERT_CHECK)
-        return;
+            if (DISABLE_SERVER_CERT_CHECK)
+                return;
 
 //      if ((certificates != null) && (certificates.length == 1)) {
 //        // self-signed check
@@ -171,14 +171,14 @@ class WeaveSSLSocketFactory implements SocketFactory, LayeredSocketFactory {
 //        // normal check
 //        m_standardTrustManager.checkServerTrusted(certificates, authType);
 //      }
-    }
+        }
 
-    /**
-     * @see X509TrustManager#getAcceptedIssuers()
-     */
-    public X509Certificate[] getAcceptedIssuers() {
-      return this.m_standardTrustManager.getAcceptedIssuers();
+        /**
+         * @see X509TrustManager#getAcceptedIssuers()
+         */
+        public X509Certificate[] getAcceptedIssuers() {
+            return this.m_standardTrustManager.getAcceptedIssuers();
+        }
     }
-  }
 }
 

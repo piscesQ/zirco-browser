@@ -15,43 +15,42 @@
 
 package org.zirco.ui.activities;
 
-import org.zirco.R;
-import org.zirco.utils.ApplicationUtils;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import org.zirco.R;
+import org.zirco.utils.ApplicationUtils;
 
 /**
  * Changelog dialog activity.
  */
 public class ChangelogActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		Window w = getWindow();
-		w.requestFeature(Window.FEATURE_LEFT_ICON);
-		
-		setContentView(R.layout.changelog_activity);
-		
-		w.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_info);
-		
-		TextView changelogText = (TextView) findViewById(R.id.ChangelogContent);		
-		changelogText.setText(ApplicationUtils.getChangelogString(this));
-		
-		Button closeBtn = (Button) this.findViewById(R.id.ChangelogActivity_CloseBtn);
-		 closeBtn.setOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-			 public void onClick(View view) {            	
-				 finish();
-			 }
+        Window w = getWindow();
+        w.requestFeature(Window.FEATURE_LEFT_ICON);
 
-		 });
-	}
+        setContentView(R.layout.changelog_activity);
+
+        w.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_info);
+
+        TextView changelogText = (TextView) findViewById(R.id.ChangelogContent);
+        changelogText.setText(ApplicationUtils.getChangelogString(this));
+
+        Button closeBtn = (Button) this.findViewById(R.id.ChangelogActivity_CloseBtn);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                finish();
+            }
+
+        });
+    }
 
 }

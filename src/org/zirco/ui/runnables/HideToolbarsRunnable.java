@@ -15,64 +15,72 @@
 
 package org.zirco.ui.runnables;
 
-import org.zirco.ui.activities.IToolbarsContainer;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import org.zirco.ui.activities.IToolbarsContainer;
 
 /**
  * A runnable to hide tool bars after the given delay.
  */
 public class HideToolbarsRunnable implements Runnable {
-	
-	private static final String TAG = "HideToolbarsRunnable";
-	
-	private IToolbarsContainer mParent;
-	private boolean mDisabled;
-	private int mDelay;
-	
-	/**
-	 * Constructor.
-	 * @param parent The parent tool bar container.
-	 * @param delay The delay before hiding, in milliseconds.
-	 */
-	public HideToolbarsRunnable(IToolbarsContainer parent, int delay) {
-		mParent = parent;
-		mDisabled = false;
-		mDelay = delay;
-	}
-	
-	private Handler mHandler = new Handler() {				
-		
-		public void handleMessage(Message msg) {
-			if ((mParent != null) &&
-					(!mDisabled)) {
-				mParent.hideToolbars();
-			}
-		}
-	};
-	
-	/**
-	 * Disable this runnable.
-	 */
-	public void setDisabled() {
-		mDisabled = true;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			
-			Thread.sleep(mDelay);
-			
-			mHandler.sendEmptyMessage(0);
-			
-		} catch (InterruptedException e) {
-			Log.w(TAG, "Exception in thread: " + e.getMessage());
-			
-			mHandler.sendEmptyMessage(0);
-		}
-	}
 
+    private static final String TAG = "HideToolbarsRunnable";
+
+    private IToolbarsContainer mParent;
+    private boolean mDisabled;
+    private int mDelay;
+
+    /**
+     * Constructor.
+     *
+     * @param parent The parent tool bar container.
+     * @param delay  The delay before hiding, in milliseconds.
+     */
+    public HideToolbarsRunnable(IToolbarsContainer parent, int delay) {
+        mParent = parent;
+        mDisabled = false;
+        mDelay = delay;
+    }
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+
+//		public void handleMessage(Message msg) {
+//			if ((mParent != null) &&
+//					(!mDisabled)) {
+//				mParent.hideToolbars();
+//			}
+//		}
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            if ((mParent != null) &&
+                    (!mDisabled)) {
+                mParent.hideToolbars();
+            }
+            return false;
+        }
+    });
+
+    /**
+     * Disable this runnable.
+     */
+    public void setDisabled() {
+        mDisabled = true;
+    }
+
+    @Override
+    public void run() {
+        try {
+
+            Thread.sleep(mDelay);
+
+            mHandler.sendEmptyMessage(0);
+
+        } catch (InterruptedException e) {
+            Log.w(TAG, "Exception in thread: " + e.getMessage());
+
+            mHandler.sendEmptyMessage(0);
+        }
+    }
 }

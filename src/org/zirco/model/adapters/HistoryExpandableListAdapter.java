@@ -15,9 +15,6 @@
 
 package org.zirco.model.adapters;
 
-import org.zirco.R;
-import org.zirco.model.items.HistoryItem;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -36,6 +33,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+import org.zirco.R;
+import org.zirco.model.items.HistoryItem;
 
 /**
  * Custom adapter for displaying history, splitted in bins.
@@ -45,52 +44,53 @@ import android.widget.TextView;
  */
 public class HistoryExpandableListAdapter extends BaseExpandableListAdapter {
 
-	private LayoutInflater mInflater = null;
-	
-	private int[] mItemMap;
-	private int mNumberOfBins;
-	private int mIdIndex;
-	private DateSorter mDateSorter;
-	
-	private Context mContext;
-	private Cursor mCursor;
-	private int mDateIndex;
-	
-	private int mFaviconSize;
-	
-	private OnCheckedChangeListener mBookmarkStarChangeListener;
-	
-	/**
-	 * Constructor.
-	 * @param context The current context.
-	 * @param cursor The data cursor.
-	 * @param dateIndex The date index ?
-	 */
-	public HistoryExpandableListAdapter(Context context, OnCheckedChangeListener bookmarksChangeListener, Cursor cursor, int dateIndex, int faviconSize) {
-		mContext = context;
-		mBookmarkStarChangeListener = bookmarksChangeListener;
-		mCursor = cursor;
-		mDateIndex = dateIndex;
-		mFaviconSize = faviconSize;
-		
-		mDateSorter = new DateSorter(mContext);
-		mIdIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
-		
-		mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
-		
-		buildMap();
-	}
-	
-	/**
-	 * Split the data in the cursor into several "bins": today, yesterday, last 7 days, last month, older.
-	 */
-	private void buildMap() {
-		int[] array = new int[DateSorter.DAY_COUNT];
+    private LayoutInflater mInflater = null;
+
+    private int[] mItemMap;
+    private int mNumberOfBins;
+    private int mIdIndex;
+    private DateSorter mDateSorter;
+
+    private Context mContext;
+    private Cursor mCursor;
+    private int mDateIndex;
+
+    private int mFaviconSize;
+
+    private OnCheckedChangeListener mBookmarkStarChangeListener;
+
+    /**
+     * Constructor.
+     *
+     * @param context   The current context.
+     * @param cursor    The data cursor.
+     * @param dateIndex The date index ?
+     */
+    public HistoryExpandableListAdapter(Context context, OnCheckedChangeListener bookmarksChangeListener, Cursor cursor, int dateIndex, int faviconSize) {
+        mContext = context;
+        mBookmarkStarChangeListener = bookmarksChangeListener;
+        mCursor = cursor;
+        mDateIndex = dateIndex;
+        mFaviconSize = faviconSize;
+
+        mDateSorter = new DateSorter(mContext);
+        mIdIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        buildMap();
+    }
+
+    /**
+     * Split the data in the cursor into several "bins": today, yesterday, last 7 days, last month, older.
+     */
+    private void buildMap() {
+        int[] array = new int[DateSorter.DAY_COUNT];
         // Zero out the array.
         for (int j = 0; j < DateSorter.DAY_COUNT; j++) {
             array[j] = 0;
         }
-        
+
         mNumberOfBins = 0;
         int dateIndex = -1;
         if (mCursor.moveToFirst() && mCursor.getCount() > 0) {
@@ -112,23 +112,25 @@ public class HistoryExpandableListAdapter extends BaseExpandableListAdapter {
                 mCursor.moveToNext();
             }
         }
-        
+
         mItemMap = array;
-	}
-	
-	/**
-	 * Get a long-typed data from mCursor.
-	 * @param cursorIndex The column index.
-	 * @return The long data.
-	 */
-	private long getLong(int cursorIndex) {
+    }
+
+    /**
+     * Get a long-typed data from mCursor.
+     *
+     * @param cursorIndex The column index.
+     * @return The long data.
+     */
+    private long getLong(int cursorIndex) {
         return mCursor.getLong(cursorIndex);
-    }	
-	
-	/**
+    }
+
+    /**
      * Translates from a group position in the ExpandableList to a bin.  This is
      * necessary because some groups have no history items, so we do not include
      * those in the ExpandableList.
+     *
      * @param groupPosition Position in the ExpandableList's set of groups
      * @return The corresponding bin that holds that group.
      */
@@ -154,16 +156,17 @@ public class HistoryExpandableListAdapter extends BaseExpandableListAdapter {
         }
         return arrayPosition;
     }
-    
+
     /**
-     * Move the cursor to the record corresponding to the given group position and child position. 
+     * Move the cursor to the record corresponding to the given group position and child position.
+     *
      * @param groupPosition The group position.
      * @param childPosition The child position.
      * @return True if the move has succeeded.
      */
-	private boolean moveCursorToChildPosition(int groupPosition, int childPosition) {
+    private boolean moveCursorToChildPosition(int groupPosition, int childPosition) {
         if (mCursor.isClosed()) {
-        	return false;
+            return false;
         }
         groupPosition = groupPositionToBin(groupPosition);
         int index = childPosition;
@@ -172,12 +175,13 @@ public class HistoryExpandableListAdapter extends BaseExpandableListAdapter {
         }
         return mCursor.moveToPosition(index);
     }
-	
-	/**
-	 * Create a new view.
-	 * @return The created view.
-	 */
-	private TextView getGenericView() {
+
+    /**
+     * Create a new view.
+     *
+     * @return The created view.
+     */
+    private TextView getGenericView() {
         // Layout parameters for the ExpandableListView
         AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, (int) (45 * mContext.getResources().getDisplayMetrics().density));
@@ -190,127 +194,133 @@ public class HistoryExpandableListAdapter extends BaseExpandableListAdapter {
         textView.setPadding((int) (35 * mContext.getResources().getDisplayMetrics().density), 0, 0, 0);
         return textView;
     }
-	
-	/**
-	 * Create a new child view.
-	 * @return The created view.
-	 */
-	private View getCustomChildView() {
-		View view = mInflater.inflate(R.layout.history_row, null, false);
-		
-		return view;
-	}
-	
-	@Override
-	public Object getChild(int groupPosition, int childPosition) {
-		moveCursorToChildPosition(groupPosition, childPosition);
 
-		return new HistoryItem(mCursor.getLong(mCursor.getColumnIndex(Browser.BookmarkColumns._ID)),
-				mCursor.getString(mCursor.getColumnIndex(Browser.BookmarkColumns.TITLE)),
-				mCursor.getString(mCursor.getColumnIndex(Browser.BookmarkColumns.URL)),
-				mCursor.getInt(mCursor.getColumnIndex(Browser.BookmarkColumns.BOOKMARK)) >= 1 ? true : false,
-				mCursor.getBlob(mCursor.getColumnIndex(Browser.BookmarkColumns.FAVICON)));
-	}
+    /**
+     * Create a new child view.
+     *
+     * @return The created view.
+     */
+    private View getCustomChildView() {
+        View view = mInflater.inflate(R.layout.history_row, null, false);
 
-	@Override
-	public long getChildId(int groupPosition, int childPosition) {
-		if (moveCursorToChildPosition(groupPosition, childPosition)) {
+        return view;
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+        moveCursorToChildPosition(groupPosition, childPosition);
+
+        return new HistoryItem(mCursor.getLong(mCursor.getColumnIndex(Browser.BookmarkColumns._ID)),
+                mCursor.getString(mCursor.getColumnIndex(Browser.BookmarkColumns.TITLE)),
+                mCursor.getString(mCursor.getColumnIndex(Browser.BookmarkColumns.URL)),
+                mCursor.getInt(mCursor.getColumnIndex(Browser.BookmarkColumns.BOOKMARK)) >= 1 ? true : false,
+                mCursor.getBlob(mCursor.getColumnIndex(Browser.BookmarkColumns.FAVICON)));
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        if (moveCursorToChildPosition(groupPosition, childPosition)) {
             return getLong(mIdIndex);
         }
         return 0;
-	}
+    }
 
-	@Override
-	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-		View view = getCustomChildView();
-        
-		TextView titleView = (TextView) view.findViewById(R.id.HistoryRow_Title);
-		
-		HistoryItem item = (HistoryItem) getChild(groupPosition, childPosition);
-		titleView.setText(item.getTitle());
-		
-		TextView urlView = (TextView) view.findViewById(R.id.HistoryRow_Url);		 					
-		urlView.setText(item.getUrl());
-		
-		CheckBox bookmarkStar = (CheckBox) view.findViewById(R.id.HistoryRow_BookmarkStar);
-		
-		bookmarkStar.setTag(item.getId());
-		
-		bookmarkStar.setOnCheckedChangeListener(null);
-		bookmarkStar.setChecked(item.isBookmark());
-		bookmarkStar.setOnCheckedChangeListener(mBookmarkStarChangeListener);
-		
-		ImageView faviconView = (ImageView) view.findViewById(R.id.HistoryRow_Thumbnail);
-		Bitmap favicon = item.getFavicon();
-		if (favicon != null) {
-			BitmapDrawable icon = new BitmapDrawable(favicon);
-			
-			Bitmap bm = Bitmap.createBitmap(mFaviconSize, mFaviconSize, Bitmap.Config.ARGB_4444);
-			Canvas canvas = new Canvas(bm);
-			
-			icon.setBounds(0, 0, mFaviconSize, mFaviconSize);
-			icon.draw(canvas);
-			
-			faviconView.setImageBitmap(bm);
-		} else {
-			faviconView.setImageResource(R.drawable.fav_icn_unknown);
-		}
-        
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        View view = getCustomChildView();
+
+        TextView titleView = (TextView) view.findViewById(R.id.HistoryRow_Title);
+
+        HistoryItem item = (HistoryItem) getChild(groupPosition, childPosition);
+        titleView.setText(item.getTitle());
+
+        TextView urlView = (TextView) view.findViewById(R.id.HistoryRow_Url);
+        urlView.setText(item.getUrl());
+
+        CheckBox bookmarkStar = (CheckBox) view.findViewById(R.id.HistoryRow_BookmarkStar);
+
+        bookmarkStar.setTag(item.getId());
+
+        bookmarkStar.setOnCheckedChangeListener(null);
+        bookmarkStar.setChecked(item.isBookmark());
+        bookmarkStar.setOnCheckedChangeListener(mBookmarkStarChangeListener);
+
+        ImageView faviconView = (ImageView) view.findViewById(R.id.HistoryRow_Thumbnail);
+        Bitmap favicon = item.getFavicon();
+        if (favicon != null) {
+            BitmapDrawable icon = new BitmapDrawable(favicon);
+
+            Bitmap bm = Bitmap.createBitmap(mFaviconSize, mFaviconSize, Bitmap.Config.ARGB_4444);
+            Canvas canvas = new Canvas(bm);
+
+            icon.setBounds(0, 0, mFaviconSize, mFaviconSize);
+            icon.draw(canvas);
+
+            faviconView.setImageBitmap(bm);
+        } else {
+            faviconView.setImageResource(R.drawable.fav_icn_unknown);
+        }
+
         return view;
-	}
+    }
 
-	@Override
-	public int getChildrenCount(int groupPosition) {
-		return mItemMap[groupPositionToBin(groupPosition)];
-	}
+    @Override
+    public int getChildrenCount(int groupPosition) {
+        return mItemMap[groupPositionToBin(groupPosition)];
+    }
 
-	@Override
-	public Object getGroup(int groupPosition) {
-		
-		int binIndex = groupPositionToBin(groupPosition);
-		
-		switch (binIndex) {
-		case 0: return mContext.getResources().getString(R.string.HistoryListActivity_Today);
-		case 1: return mContext.getResources().getString(R.string.HistoryListActivity_Yesterday);
-		case 2: return mContext.getResources().getString(R.string.HistoryListActivity_LastSevenDays);
-		case 3: return mContext.getResources().getString(R.string.HistoryListActivity_LastMonth);
-		default: return mContext.getResources().getString(R.string.HistoryListActivity_Older);
-		}
-	}
+    @Override
+    public Object getGroup(int groupPosition) {
 
-	@Override
-	public int getGroupCount() {
-		return mNumberOfBins;
-	}
+        int binIndex = groupPositionToBin(groupPosition);
 
-	@Override
-	public long getGroupId(int groupPosition) {
-		return groupPosition;
-	}
+        switch (binIndex) {
+            case 0:
+                return mContext.getResources().getString(R.string.HistoryListActivity_Today);
+            case 1:
+                return mContext.getResources().getString(R.string.HistoryListActivity_Yesterday);
+            case 2:
+                return mContext.getResources().getString(R.string.HistoryListActivity_LastSevenDays);
+            case 3:
+                return mContext.getResources().getString(R.string.HistoryListActivity_LastMonth);
+            default:
+                return mContext.getResources().getString(R.string.HistoryListActivity_Older);
+        }
+    }
 
-	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-		TextView textView = getGenericView();
+    @Override
+    public int getGroupCount() {
+        return mNumberOfBins;
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        TextView textView = getGenericView();
         textView.setText(getGroup(groupPosition).toString());
         return textView;
-	}
+    }
 
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
 
-	@Override
-	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return true;
-	}
-	
-	/**
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
+
+    /**
      * Determine which group an item belongs to.
      * @param childId ID of the child view in question.
      * @return int Group position of the containing group.
      */
-	/*
+    /*
 	private int groupFromChildId(long childId) {
         int group = -1;
         for (mCursor.moveToFirst(); !mCursor.isAfterLast();

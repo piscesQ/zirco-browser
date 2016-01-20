@@ -4,8 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-class Hex
-{
+class Hex {
     private static final HexEncoder encoder = new HexEncoder();
 
     /**
@@ -14,8 +13,7 @@ class Hex
      * @return a byte array containing the Hex encoded data.
      */
     public static byte[] encode(
-        byte[]    data)
-    {
+            byte[] data) {
         return encode(data, 0, data.length);
     }
 
@@ -25,18 +23,14 @@ class Hex
      * @return a byte array containing the Hex encoded data.
      */
     public static byte[] encode(
-        byte[]    data,
-        int       off,
-        int       length)
-    {
-        ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
+            byte[] data,
+            int off,
+            int length) {
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-        try
-        {
+        try {
             encoder.encode(data, off, length, bOut);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException("exception encoding Hex string: " + e);
         }
 
@@ -49,10 +43,9 @@ class Hex
      * @return the number of bytes produced.
      */
     public static int encode(
-        byte[]         data,
-        OutputStream   out)
-        throws IOException
-    {
+            byte[] data,
+            OutputStream out)
+            throws IOException {
         return encoder.encode(data, 0, data.length, out);
     }
 
@@ -62,12 +55,11 @@ class Hex
      * @return the number of bytes produced.
      */
     public static int encode(
-        byte[]         data,
-        int            off,
-        int            length,
-        OutputStream   out)
-        throws IOException
-    {
+            byte[] data,
+            int off,
+            int length,
+            OutputStream out)
+            throws IOException {
         return encoder.encode(data, off, length, out);
     }
 
@@ -77,16 +69,12 @@ class Hex
      * @return a byte array representing the decoded data.
      */
     public static byte[] decode(
-        byte[]    data)
-    {
-        ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
+            byte[] data) {
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-        try
-        {
+        try {
             encoder.decode(data, 0, data.length, bOut);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException("exception decoding Hex string: " + e);
         }
 
@@ -99,16 +87,12 @@ class Hex
      * @return a byte array representing the decoded data.
      */
     public static byte[] decode(
-        String    data)
-    {
-        ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
+            String data) {
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-        try
-        {
+        try {
             encoder.decode(data, bOut);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException("exception decoding Hex string: " + e);
         }
 
@@ -122,10 +106,9 @@ class Hex
      * @return the number of bytes produced.
      */
     public static int decode(
-        String          data,
-        OutputStream    out)
-        throws IOException
-    {
+            String data,
+            OutputStream out)
+            throws IOException {
         return encoder.decode(data, out);
     }
 }

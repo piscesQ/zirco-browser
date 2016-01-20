@@ -382,9 +382,9 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
                         startShowFindDialogRunnable();
                         break;
                     case 3:
-                        swithToSelectAndCopyTextMode();
+                        swithToSelectAndCopyTextMode(); //find and highlight special words
                         break;
-                    case 4:
+                    case 4: //移动网关
                         String currentUrl = mUrlEditText.getText().toString();
 
                         // Do not reload mobile view if already on it.
@@ -469,12 +469,16 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
         });
         mNextTabView.setVisibility(View.GONE);
 
-        String[] from = new String[]{UrlSuggestionCursorAdapter.URL_SUGGESTION_TITLE, UrlSuggestionCursorAdapter.URL_SUGGESTION_URL};
+        String[] from = new String[]{
+                UrlSuggestionCursorAdapter.URL_SUGGESTION_TITLE,
+                UrlSuggestionCursorAdapter.URL_SUGGESTION_URL
+        };
         int[] to = new int[]{R.id.AutocompleteTitle, R.id.AutocompleteUrl};
 
-        UrlSuggestionCursorAdapter adapter = new UrlSuggestionCursorAdapter(this, R.layout.url_autocomplete_line, null, from, to);
+        UrlSuggestionCursorAdapter urlSuggestionCursorAdapter
+                = new UrlSuggestionCursorAdapter(this, R.layout.url_autocomplete_line, null, from, to);
 
-        adapter.setCursorToStringConverter(new CursorToStringConverter() {
+        urlSuggestionCursorAdapter.setCursorToStringConverter(new CursorToStringConverter() {
             @Override
             public CharSequence convertToString(Cursor cursor) {
                 String aColumnString = cursor.getString(cursor.getColumnIndex(UrlSuggestionCursorAdapter.URL_SUGGESTION_URL));
@@ -482,25 +486,27 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
             }
         });
 
-        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+        urlSuggestionCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {
                 if ((constraint != null) &&
                         (constraint.length() > 0)) {
                     return BookmarksProviderWrapper.getUrlSuggestions(getContentResolver(),
                             constraint.toString(),
-                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean(Constants.PREFERENCE_USE_WEAVE, false));
+                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                                    .getBoolean(Constants.PREFERENCE_USE_WEAVE, false));
                 } else {
                     return BookmarksProviderWrapper.getUrlSuggestions(getContentResolver(),
                             null,
-                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean(Constants.PREFERENCE_USE_WEAVE, false));
+                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                                    .getBoolean(Constants.PREFERENCE_USE_WEAVE, false));
                 }
             }
         });
 
         mUrlEditText = (AutoCompleteTextView) findViewById(R.id.UrlText);
         mUrlEditText.setThreshold(1);
-        mUrlEditText.setAdapter(adapter);
+        mUrlEditText.setAdapter(urlSuggestionCursorAdapter);
 
         mUrlEditText.setOnKeyListener(new View.OnKeyListener() {
 
@@ -510,10 +516,8 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
                     navigateToUrl();
                     return true;
                 }
-
                 return false;
             }
-
         });
 
 
@@ -607,7 +611,7 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
             }
         });
 
-        mQuickButton = (ImageButton) findViewById(R.id.QuickBtn);
+        mQuickButton = (ImageButton) findViewById(R.id.QuickBtn);   //bookmark on bottom bar
         mQuickButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 onQuickButton();
@@ -798,14 +802,12 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
         });
 
         mCurrentWebView.setDownloadListener(new DownloadListener() {
-
             @Override
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
                 doDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength);
             }
-
         });
 
         final Activity activity = this;
@@ -827,9 +829,10 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
             @Override
             public Bitmap getDefaultVideoPoster() {
                 if (mDefaultVideoPoster == null) {
-                    mDefaultVideoPoster = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.drawable.default_video_poster);
+                    mDefaultVideoPoster = BitmapFactory.decodeResource(
+                            MainActivity.this.getResources(),
+                            R.drawable.default_video_poster);
                 }
-
                 return mDefaultVideoPoster;
             }
 
@@ -1349,7 +1352,8 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
             mHideToolbarsRunnable.setDisabled();
         }
 
-        int delay = Integer.parseInt(Controller.getInstance().getPreferences().getString(Constants.PREFERENCES_GENERAL_BARS_DURATION, "3000"));
+        int delay = Integer.parseInt(Controller.getInstance().getPreferences()
+                .getString(Constants.PREFERENCES_GENERAL_BARS_DURATION, "3000"));
         if (delay <= 0) {
             delay = 3000;
         }
