@@ -1380,13 +1380,13 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
 
     /**
      * Start a runnable to update history.
+     * add url to history
      *
      * @param title The page title.
      * @param url   The page url.
      */
     private void startHistoryUpdaterRunnable(String title, String url, String originalUrl) {
-        if ((url != null) &&
-                (url.length() > 0)) {
+        if ((url != null) && (url.length() > 0)) {
             new Thread(new HistoryUpdater(this, title, url, originalUrl)).start();
         }
     }
@@ -1503,7 +1503,8 @@ public class MainActivity extends Activity implements IToolbarsContainer, OnTouc
                 return true;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
-                String volumeKeysBehaviour = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREFERENCES_UI_VOLUME_KEYS_BEHAVIOUR, "DEFAULT");
+                String volumeKeysBehaviour = PreferenceManager.getDefaultSharedPreferences(this)
+                        .getString(Constants.PREFERENCES_UI_VOLUME_KEYS_BEHAVIOUR, "DEFAULT");
 
                 if (volumeKeysBehaviour.equals("DEFAULT")) {
                     return super.onKeyUp(keyCode, event);

@@ -50,9 +50,10 @@ public class HistoryUpdater implements Runnable {
 
     @Override
     public void run() {
+        String preHistorySize = PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getString(Constants.PREFERENCES_BROWSER_HISTORY_SIZE, "90");
         BookmarksProviderWrapper.updateHistory(mContext.getContentResolver(), mTitle, mUrl, mOriginalUrl);
-        BookmarksProviderWrapper.truncateHistory(mContext.getContentResolver(),
-                PreferenceManager.getDefaultSharedPreferences(mContext).getString(Constants.PREFERENCES_BROWSER_HISTORY_SIZE, "90"));
+        BookmarksProviderWrapper.truncateHistory(mContext.getContentResolver(), preHistorySize);
     }
 
 }

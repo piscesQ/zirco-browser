@@ -68,6 +68,8 @@ public class DownloadRunnable implements Runnable {
         return fileName.substring(0, fileName.indexOf("?"));
     }
 
+    //TODO custom filename
+
     /**
      * Get a file object representation of the file name, in th right folder of the SD card.
      *
@@ -121,6 +123,8 @@ public class DownloadRunnable implements Runnable {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int downloaded = 0;
                 int read;
+
+                //TODO  breakpoint Continuingly supp
 
                 while ((downLoading) &&
                         (!mAborted)) {

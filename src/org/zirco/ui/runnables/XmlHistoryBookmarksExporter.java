@@ -98,8 +98,9 @@ public class XmlHistoryBookmarksExporter implements Runnable {
         mHandler.sendEmptyMessage(0);
     }
 
-    private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
@@ -109,15 +110,17 @@ public class XmlHistoryBookmarksExporter implements Runnable {
                     ApplicationUtils.showOkDialog(mContext,
                             android.R.drawable.ic_dialog_info,
                             mContext.getResources().getString(R.string.Commons_HistoryBookmarksExportSDCardDoneTitle),
-                            String.format(mContext.getResources().getString(R.string.Commons_HistoryBookmarksExportSDCardDoneMessage), mFile.getAbsolutePath()));
+                            String.format(mContext.getResources()
+                                    .getString(R.string.Commons_HistoryBookmarksExportSDCardDoneMessage), mFile.getAbsolutePath()));
                 } else {
                     ApplicationUtils.showOkDialog(mContext,
                             android.R.drawable.ic_dialog_alert,
                             mContext.getResources().getString(R.string.Commons_HistoryBookmarksExportSDCardFailedTitle),
-                            String.format(mContext.getResources().getString(R.string.Commons_HistoryBookmarksFailedMessage), mErrorMessage));
+                            String.format(mContext.getResources()
+                                    .getString(R.string.Commons_HistoryBookmarksFailedMessage), mErrorMessage));
                 }
             }
+            return false;
         }
-    };
-
+    });
 }

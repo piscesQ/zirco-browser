@@ -149,7 +149,8 @@ public class XmlHistoryBookmarksImporter implements Runnable {
                                 }
                             }
 
-                            BookmarksProviderWrapper.insertRawRecord(mContext.getContentResolver(), title, url, visits, date, created, bookmark);
+                            BookmarksProviderWrapper.insertRawRecord(
+                                    mContext.getContentResolver(), title, url, visits, date, created, bookmark);
                         }
                     }
 
@@ -209,7 +210,8 @@ public class XmlHistoryBookmarksImporter implements Runnable {
 
                             }
 
-                            BookmarksProviderWrapper.insertRawRecord(mContext.getContentResolver(), title, url, count, date, created, 1);
+                            BookmarksProviderWrapper.insertRawRecord(
+                                    mContext.getContentResolver(), title, url, count, date, created, 1);
                         }
                     }
                 }
@@ -229,8 +231,9 @@ public class XmlHistoryBookmarksImporter implements Runnable {
         mHandler.sendEmptyMessage(0);
     }
 
-    private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
@@ -239,10 +242,11 @@ public class XmlHistoryBookmarksImporter implements Runnable {
                 ApplicationUtils.showOkDialog(mContext,
                         android.R.drawable.ic_dialog_alert,
                         mContext.getResources().getString(R.string.Commons_HistoryBookmarksImportSDCardFailedTitle),
-                        String.format(mContext.getResources().getString(R.string.Commons_HistoryBookmarksFailedMessage), mErrorMessage));
+                        String.format(mContext.getResources()
+                                .getString(R.string.Commons_HistoryBookmarksFailedMessage), mErrorMessage));
 
             }
+            return false;
         }
-    };
-
+    });
 }
