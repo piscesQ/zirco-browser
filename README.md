@@ -1,1 +1,1 @@
-an open browser
+an open source browser
